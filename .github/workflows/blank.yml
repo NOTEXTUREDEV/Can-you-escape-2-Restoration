@@ -1,0 +1,34 @@
+name: Build 64-bit AIR APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout game files
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Download HARMAN AIR SDK
+        run: |
+          mkdir -p airsdk
+          curl -L "https://harman.com" -o airsdk.tar.xz
+          tar -xf airsdk.tar.xz -C airsdk
+
+      - name: Package 64-bit APK
+        run: |
+          ./airsdk/bin/adt -certificate -cn "SelfSigned" 2048-RSA cert.p12 password123
+          ./airsdk/bin/adt -package -target apk-captive-runtime -arch armv8 -storetype pkcs12 -keystore cert.p12 -storepass password123 CYE2_64bit.apk META-INF/AIR/application.xml .
+
+      - name: Upload 64-bit APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: CYE2-64bit-APK
+          path: CYE2_64bit.apk
