@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout game files
         uses: actions/checkout@v4
@@ -16,18 +16,16 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Download HARMAN AIR SDK
-        shell: pwsh
-        run: |
-          mkdir airsdk
-          Invoke-WebRequest -Uri "https://harman.com" -OutFile "airsdk.zip"
-          Expand-Archive -Path "airsdk.zip" -DestinationPath "airsdk"
+      - name: Set up Adobe AIR SDK
+        uses: joshtynjala/setup-adobe-air-action@v1
+        with:
+          air-version: '51.1.3.1'
+          accept-license: true
 
       - name: Package 64-bit APK
-        shell: pwsh
         run: |
-          & ".\airsdk\bin\adt.bat" -certificate -cn "SelfSigned" 2048-RSA cert.p12 password123
-          & ".\airsdk\bin\adt.bat" -package -target apk-captive-runtime -arch armv8 -storetype pkcs12 -keystore cert.p12 -storepass password123 CYE2_64bit.apk META-INF/AIR/application.xml .
+          adt -certificate -cn "SelfSigned" 2048-RSA cert.p12 password123
+          adt -package -target apk-captive-runtime -arch armv8 -storetype pkcs12 -keystore cert.p12 -storepass password123 CYE2_64bit.apk META-INF/AIR/application.xml .
 
       - name: Upload 64-bit APK
         uses: actions/upload-artifact@v4
