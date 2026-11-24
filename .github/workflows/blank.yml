@@ -16,20 +16,18 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Download HARMAN AIR SDK via Manager
+      - name: Download HARMAN AIR SDK
         shell: pwsh
         run: |
-          Invoke-WebRequest -Uri "https://github.com" -OutFile "manager.zip"
-          Expand-Archive -Path "manager.zip" -DestinationPath "manager"
           mkdir airsdk
-          ./manager/AIRSDKManager.exe --accept-license --install latest --location ./airsdk
+          Invoke-WebRequest -Uri "https://harman.com" -OutFile "airsdk.zip"
+          Expand-Archive -Path "airsdk.zip" -DestinationPath "airsdk"
 
       - name: Package 64-bit APK
         shell: pwsh
         run: |
-          $sdkFolder = (Get-ChildItem -Path "./airsdk" -Directory | Select-Object -First 1).FullName
-          & "$sdkFolder\bin\adt.bat" -certificate -cn "SelfSigned" 2048-RSA cert.p12 password123
-          & "$sdkFolder\bin\adt.bat" -package -target apk-captive-runtime -arch armv8 -storetype pkcs12 -keystore cert.p12 -storepass password123 CYE2_64bit.apk META-INF/AIR/application.xml .
+          & ".\airsdk\bin\adt.bat" -certificate -cn "SelfSigned" 2048-RSA cert.p12 password123
+          & ".\airsdk\bin\adt.bat" -package -target apk-captive-runtime -arch armv8 -storetype pkcs12 -keystore cert.p12 -storepass password123 CYE2_64bit.apk META-INF/AIR/application.xml .
 
       - name: Upload 64-bit APK
         uses: actions/upload-artifact@v4
