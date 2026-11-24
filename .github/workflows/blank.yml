@@ -33,7 +33,7 @@ jobs:
             <filename>CanYouEscape2</filename>
             <name>Can You Escape 2</name>
             <initialWindow>
-              <content>CYE2_Ironsource.swf</content>
+              <content>CYE2_RESTORED.swf</content>
               <visible>true</visible>
               <fullScreen>true</fullScreen>
               <aspectRatio>landscape</aspectRatio>
