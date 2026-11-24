@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - name: Checkout game files
         uses: actions/checkout@v4
@@ -16,16 +16,20 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Download HARMAN AIR SDK
+      - name: Download HARMAN AIR SDK via Manager
+        shell: pwsh
         run: |
-          mkdir -p airsdk
-          curl -kL "https://harman.com" -o airsdk.tar.xz
-          tar -xf airsdk.tar.xz -C airsdk
+          Invoke-WebRequest -Uri "https://github.com" -OutFile "manager.zip"
+          Expand-Archive -Path "manager.zip" -DestinationPath "manager"
+          mkdir airsdk
+          ./manager/AIRSDKManager.exe --accept-license --install latest --location ./airsdk
 
       - name: Package 64-bit APK
+        shell: pwsh
         run: |
-          ./airsdk/bin/adt -certificate -cn "SelfSigned" 2048-RSA cert.p12 password123
-          ./airsdk/bin/adt -package -target apk-captive-runtime -arch armv8 -storetype pkcs12 -keystore cert.p12 -storepass password123 CYE2_64bit.apk META-INF/AIR/application.xml .
+          $sdkFolder = (Get-ChildItem -Path "./airsdk" -Directory | Select-Object -First 1).FullName
+          & "$sdkFolder\bin\adt.bat" -certificate -cn "SelfSigned" 2048-RSA cert.p12 password123
+          & "$sdkFolder\bin\adt.bat" -package -target apk-captive-runtime -arch armv8 -storetype pkcs12 -keystore cert.p12 -storepass password123 CYE2_64bit.apk META-INF/AIR/application.xml .
 
       - name: Upload 64-bit APK
         uses: actions/upload-artifact@v4
