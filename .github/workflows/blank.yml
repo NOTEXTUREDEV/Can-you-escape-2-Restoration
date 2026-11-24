@@ -57,9 +57,8 @@ jobs:
           </application>"""
           open("app.xml", "w").write(xml)
           '
-          cat app.xml
           adt -certificate -cn "SelfSigned" 2048-RSA cert.p12 password123
-          adt -package -target apk-captive-runtime -arch armv8 -storetype pkcs12 -keystore cert.p12 -storepass password123 CYE2_64bit.apk app.xml CYE2_Ironsource.swf
+          adt -package -target apk-captive-runtime -arch armv8 -storetype pkcs12 -keystore cert.p12 -storepass password123 CYE2_64bit.apk app.xml CYE2_RESTORED.swf
 
       - name: Upload 64-bit APK
         uses: actions/upload-artifact@v4
