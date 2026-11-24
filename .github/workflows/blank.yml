@@ -24,26 +24,23 @@ jobs:
 
       - name: Package 64-bit APK
         run: |
-          cat << 'EOF' > descriptor.xml
-          <?xml version="1.0" encoding="UTF-8"?>
+          ls -la
+          file CYE2_Ironsource.swf
+          python3 -c '
+          xml = """<?xml version="1.0" encoding="UTF-8"?>
           <application xmlns="http://adobe.com">
             <id>com.textureless.canyouescape2restoration</id>
             <versionNumber>3.9.0</versionNumber>
-            <versionLabel>3.9</versionLabel>
             <filename>CanYouEscape2</filename>
             <name>Can You Escape 2</name>
             <initialWindow>
               <content>CYE2_Ironsource.swf</content>
-              <systemChrome>standard</systemChrome>
-              <transparent>false</transparent>
               <visible>true</visible>
               <fullScreen>true</fullScreen>
               <aspectRatio>landscape</aspectRatio>
               <renderMode>cpu</renderMode>
               <autoOrients>false</autoOrients>
             </initialWindow>
-            <customUpdateUI>false</customUpdateUI>
-            <allowBrowserInvocation>false</allowBrowserInvocation>
             <android>
               <manifestAdditions><![CDATA[<manifest>
                 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
@@ -58,11 +55,11 @@ jobs:
                 </application>
               </manifest>]]></manifestAdditions>
             </android>
-            <supportedLanguages>en</supportedLanguages>
-          </application>
-          EOF
+          </application>"""
+          open("app.xml", "w").write(xml)
+          '
           adt -certificate -cn "SelfSigned" 2048-RSA cert.p12 password123
-          adt -package -target apk-captive-runtime -arch armv8 -storetype pkcs12 -keystore cert.p12 -storepass password123 CYE2_64bit.apk descriptor.xml CYE2_Ironsource.swf
+          adt -package -target apk-captive-runtime -arch armv8 -storetype pkcs12 -keystore cert.p12 -storepass password123 CYE2_64bit.apk app.xml CYE2_Ironsource.swf
 
       - name: Upload 64-bit APK
         uses: actions/upload-artifact@v4
