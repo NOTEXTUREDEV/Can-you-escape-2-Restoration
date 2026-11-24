@@ -25,7 +25,7 @@ jobs:
       - name: Package 64-bit APK
         run: |
           adt -certificate -cn "SelfSigned" 2048-RSA cert.p12 password123
-          adt -package -target apk-captive-runtime -arch armv8 -storetype pkcs12 -keystore cert.p12 -storepass password123 CYE2_64bit.apk META-INF/AIR/application.xml .
+          adt -package -target apk-captive-runtime -arch armv8 -storetype pkcs12 -keystore cert.p12 -storepass password123 CYE2_64bit.apk application.xml CYE2_Ironsource.swf
 
       - name: Upload 64-bit APK
         uses: actions/upload-artifact@v4
