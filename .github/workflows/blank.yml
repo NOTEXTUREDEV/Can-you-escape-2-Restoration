@@ -24,11 +24,10 @@ jobs:
 
       - name: Package 64-bit APK
         run: |
-          NS=$(grep -o 'http://adobe.com[0-9.]*' "$AIR_HOME/templates/air/descriptor-template.xml" | head -n 1)
-          echo "Using SDK Namespace: $NS"
-          python3 -c "
-          xml = '''<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-          <application xmlns=\"$NS\">
+          python3 -c '
+          ns = "http://" + "ns." + "adobe.com" + "/air/application/51.1"
+          xml = f"""<?xml version="1.0" encoding="UTF-8"?>
+          <application xmlns="{ns}">
             <id>com.textureless.canyouescape2restoration</id>
             <versionNumber>3.9.0</versionNumber>
             <filename>CanYouEscape2</filename>
@@ -43,21 +42,22 @@ jobs:
             </initialWindow>
             <android>
               <manifestAdditions><![CDATA[<manifest>
-                <uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\"/>
-                <uses-permission android:name=\"android.permission.WAKE_LOCK\"/>
-                <application android:enabled=\"true\">
-                  <activity android:excludeFromRecents=\"false\">
+                <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+                <uses-permission android:name="android.permission.WAKE_LOCK"/>
+                <application android:enabled="true">
+                  <activity android:excludeFromRecents="false">
                     <intent-filter>
-                      <action android:name=\"android.intent.action.MAIN\"/>
-                      <category android:name=\"android.intent.category.LAUNCHER\"/>
+                      <action android:name="android.intent.action.MAIN"/>
+                      <category android:name="android.intent.category.LAUNCHER"/>
                     </intent-filter>
                   </activity>
                 </application>
               </manifest>]]></manifestAdditions>
             </android>
-          </application>'''
-          open('app.xml', 'w').write(xml)
-          "
+          </application>"""
+          open("app.xml", "w").write(xml)
+          '
+          cat app.xml
           adt -certificate -cn "SelfSigned" 2048-RSA cert.p12 password123
           adt -package -target apk-captive-runtime -arch armv8 -storetype pkcs12 -keystore cert.p12 -storepass password123 CYE2_64bit.apk app.xml CYE2_Ironsource.swf
 
