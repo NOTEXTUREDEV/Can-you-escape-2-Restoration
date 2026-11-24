@@ -17,9 +17,9 @@ jobs:
           java-version: '17'
 
       - name: Set up Adobe AIR SDK
-        uses: joshtynjala/setup-adobe-air-action@v1
+        uses: joshtynjala/setup-adobe-air-action@v2
         with:
-          air-version: '51.1.3.1'
+          air-version: '51.1'
           accept-license: true
 
       - name: Package 64-bit APK
